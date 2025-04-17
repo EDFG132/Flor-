@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixelart Tulipán Mejorado</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(45deg, #00796b, #009688);
+      width: 100%;
+      padding: 20px 0;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      margin-bottom: 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1));
+      animation: headerShine 2s infinite;
+    }
+
+    @keyframes headerShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      padding: 20px;
+    }
+
+    .pixel-grid {
+      display: grid;
+      grid-template-columns: repeat(11, 35px);
+      grid-template-rows: repeat(16, 35px);
+      gap: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      animation: floatGrid 4s ease-in-out infinite;
+    }
+
+    @keyframes floatGrid {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .pixel {
+      width: 35px;
+      height: 35px;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .pixel:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    #mensaje-final {
+      font-size: 2rem;
+      color: #ff69b4;
+      text-align: center;
+      min-height: 2em;
+      text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+      animation: pulseText 2s infinite;
+    }
+
+    @keyframes pulseText {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .particle {
+      position: absolute;
+      pointer-events: none;
+      background: radial-gradient(circle, #fff, transparent);
+      border-radius: 50%;
+      animation: particleFade 1.5s ease-out forwards;
+    }
+
+    @keyframes particleFade {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+
+    .controls {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(45deg, #00796b, #009688);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌷 Tulipán Pixelart Mágico 🌷</h1>
+  </header>
+
+  <div class="content">
+    <div class="pixel-grid" id="pixel-container"></div>
+    <div id="mensaje-final"></div>
+    <div class="controls">
+      <button class="button" onclick="reiniciarAnimacion()">Reiniciar Animación</button>
+      <button class="button" onclick="toggleModoColor()">Cambiar Colores</button>
+    </div>
+  </div>
+
+  <script>
+    const pixelData = [
+      // Maceta
+      { x: 3, y: 13, color: '#A52A2A' },
+      { x: 4, y: 13, color: '#A52A2A' },
+      { x: 5, y: 13, color: '#A52A2A' },
+      { x: 6, y: 13, color: '#A52A2A' },
+      { x: 7, y: 13, color: '#8B4513' },
+      { x: 3, y: 14, color: '#8B4513' },
+      { x: 4, y: 14, color: '#8B4513' },
+      { x: 5, y: 14, color: '#A52A2A' },
+      { x: 6, y: 14, color: '#A52A2A' },
+      { x: 7, y: 14, color: '#A52A2A' },
+      { x: 3, y: 15, color: '#A52A2A' },
+      { x: 4, y: 15, color: '#A52A2A' },
+      { x: 5, y: 15, color: '#8B4513' },
+      { x: 6, y: 15, color: '#A52A2A' },
+      { x: 7, y: 15, color: '#A52A2A' },
+      // Tallo
+      { x: 5, y: 4, color: '#32CD32' },
+      { x: 5, y: 5, color: '#32CD32' },
+      { x: 5, y: 6, color: '#228B22' },
+      { x: 5, y: 7, color: '#228B22' },
+      { x: 5, y: 8, color: '#32CD32' },
+      { x: 5, y: 9, color: '#228B22' },
+      { x: 5, y: 10, color: '#32CD32' },
+      { x: 5, y: 11, color: '#228B22' },
+      { x: 5, y: 12, color: '#006400' },
+      // Hojas
+      { x: 4, y: 11, color: '#006400' },
+      { x: 4, y: 10, color: '#228B22' },
+      { x: 4, y: 9, color: '#008000' },
+      { x: 4, y: 8, color: '#006400' },
+      { x: 3, y: 10, color: '#006400' },
+      { x: 3, y: 9, color: '#32CD32' },
+      { x: 3, y: 8, color: '#228B22' },
+      { x: 3, y: 7, color: '#32CD32' },
+      { x: 3, y: 6, color: '#008000' },
+      { x: 3, y: 5, color: '#228B22' },
+      { x: 2, y: 8, color: '#006400' },
+      { x: 2, y: 7, color: '#006400' },
+      { x: 2, y: 6, color: '#228B22' },
+      { x: 2, y: 5, color: '#008000' },
+      { x: 2, y: 4, color: '#32CD32' },
+      { x: 1, y: 4, color: '#006400' },
+      { x: 6, y: 11, color: '#006400' },
+      { x: 6, y: 10, color: '#006400' },
+      { x: 6, y: 9, color: '#228B22' },
+      { x: 6, y: 8, color: '#228B22' },
+      { x: 6, y: 7, color: '#006400' },
+      { x: 7, y: 9, color: '#006400' },
+      { x: 7, y: 8, color: '#006400' },
+      { x: 7, y: 7, color: '#32CD32' },
+      { x: 7, y: 6, color: '#228B22' },
+      { x: 7, y: 5, color: '#008000' },
+      { x: 7, y: 4, color: '#006400' },
+      { x: 8, y: 7, color: '#006400' },
+      { x: 8, y: 6, color: '#006400' },
+      { x: 8, y: 5, color: '#228B22' },
+      // Flor
+      { x: 4, y: 0, color: '#FFB6C1' },
+      { x: 6, y: 0, color: '#FFB6C1' },
+      { x: 4, y: 1, color: '#FF80BF' },
+      { x: 5, y: 1, color: '#FFB6C1' },
+      { x: 6, y: 1, color: '#FF80BF' },
+      { x: 4, y: 2, color: '#ff69b4' },
+      { x: 5, y: 2, color: '#FF80BF' },
+      { x: 6, y: 2, color: '#ff69b4' },
+      { x: 5, y: 3, color: '#ff69b4' },
+    ];
+
+    let colorMode = 'normal';
+
+    function crearParticula(x, y) {
+      const particula = document.createElement('div');
+      particula.className = 'particle';
+      particula.style.left = `${x}px`;
+      particula.style.top = `${y}px`;
+      particula.style.width = '10px';
+      particula.style.height = '10px';
+      document.body.appendChild(particula);
+      setTimeout(() => particula.remove(), 1500);
+    }
+
+    function getColorAlternativo(color) {
+      const coloresAlternativos = {
+        '#A52A2A': '#4A0404',
+        '#8B4513': '#2E1608',
+        '#32CD32': '#00FF00',
+        '#228B22': '#90EE90',
+        '#006400': '#98FB98',
+        '#008000': '#3CB371',
+        '#FFB6C1': '#FF1493',
+        '#FF80BF': '#FF69B4',
+        '#ff69b4': '#DB7093'
+      };
+      return coloresAlternativos[color] || color;
+    }
+
+    function crearPixelArt() {
+      const container = document.getElementById('pixel-container');
+      const mensajeEl = document.getElementById('mensaje-final');
+      container.innerHTML = '';
+      mensajeEl.textContent = '';
+
+      for (let i = 0; i < 11 * 16; i++) {
+        const pixel = document.createElement('div');
+        pixel.classList.add('pixel');
+        container.appendChild(pixel);
+      }
+
+      pixelData.forEach((pixel, index) => {
+        setTimeout(() => {
+          const position = pixel.y * 11 + pixel.x;
+          const pixelElement = container.children[position];
+          if (pixelElement) {
+            const color = colorMode === 'normal' ? pixel.color : getColorAlternativo(pixel.color);
+            pixelElement.style.backgroundColor = color;
+            crearParticula(
+              pixelElement.offsetLeft + pixelElement.offsetWidth / 2,
+              pixelElement.offsetTop + pixelElement.offsetHeight / 2
+            );
+          }
+
+          if (index === pixelData.length - 1) {
+            setTimeout(() => {
+              const mensaje = "✨ Esta flor es para ti 🌷💖 ✨";
+              [...mensaje].forEach((letra, i) => {
+                setTimeout(() => {
+                  mensajeEl.textContent += letra;
+                }, i * 100);
+              });
+            }, 300);
+          }
+        }, index * 100);
+      });
+    }
+
+    function reiniciarAnimacion() {
+      crearPixelArt();
+    }
+
+    function toggleModoColor() {
+      colorMode = colorMode === 'normal' ? 'alternativo' : 'normal';
+      crearPixelArt();
+    }
+
+    window.onload = crearPixelArt;
+
+    // Efecto de partículas al mover el mouse
+    document.addEventListener('mousemove', (e) => {
+      if (Math.random() < 0.1) {
+        crearParticula(e.clientX, e.clientY);
+      }
+    });
+  </script>
+</body>
+</html>
